@@ -4,14 +4,14 @@ import SelectDropdown from "react-native-select-dropdown";
 
 const SelectDurationScreen = ({ getDuration, exerciseDuration }) => {
   const timeIntervel = [
-    "15min",
-    "30min",
-    "45min",
-    "1hr",
-    "1hr 15min",
-    "1hr 30min",
-    "1hr 45min",
-    "2hs",
+    "0 hr 15 min",
+    "0 hr 30 min",
+    "0 hr 45 min",
+    "1 hr 0 min",
+    "1 hr 15 min",
+    "1 hr 30 min",
+    "1 hr 45 min",
+    "2 hs",
   ];
   return (
     <View style={styles.exerciseView}>
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   exerciseDropdown: {
-    backgroundColor: "#846588",
+    backgroundColor: "#bac9d6",
     textDecorationColor: "white",
     width: 100,
     padding: 0,

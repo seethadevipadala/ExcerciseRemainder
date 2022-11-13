@@ -11,7 +11,7 @@ const EditScreen = ({ navigation }) => {
   const timevalue = navigation.getParam("timevalue");
   const getEditedTimeValue = navigation.getParam("getEditedTimeValue");
   const [value, setValue] = useState(timevalue);
-
+  // console.log("edit",timevalue)
   return (
     <View>
       <Text style={styles.text}>At what time you want to excercise daily?</Text>
@@ -41,7 +41,7 @@ const EditScreen = ({ navigation }) => {
             navigation.navigate("HomeScreen");
           }}
           title="Save"
-          color="#846588"
+          color="#91abc2"
         />
       </View>
     </View>
@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
   button: {
     marginLeft: 140,
     marginRight: 130,
-    backgroundColor: "#846588",
     height: 50,
     borderRadius: 50,
     marginTop: 100,
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   dropdown: {
-    backgroundColor: "#846588",
+    backgroundColor: "#bac9d6",
     width: 110,
     marginBottom: 20,
     marginRight: 145,
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   exerciseDropdown: {
-    backgroundColor: "#846588",
+    backgroundColor: "#bac9d6",
     textDecorationColor: "white",
     width: 100,
     padding: 0,
@@ -108,8 +107,8 @@ const styles = StyleSheet.create({
   button: {
     marginLeft: 140,
     marginRight: 130,
-    backgroundColor: "#846588",
-    height: 50,
+    // backgroundColor: "#bac9d6",
+    height: 80,
     // width: 170,
     borderRadius: 50,
     marginTop: 100,
