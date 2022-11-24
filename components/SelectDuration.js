@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-const SelectDurationScreen = ({ getDuration, exerciseDuration }) => {
+const SelectDurationScreen = ({ setDuration, exerciseDuration }) => {
+
   const timeIntervel = [
     "0 hr 15 min",
     "0 hr 30 min",
@@ -18,11 +19,12 @@ const SelectDurationScreen = ({ getDuration, exerciseDuration }) => {
       <Text style={styles.exerciseText}>How long you will excercise?</Text>
       <View style={styles.exerciseDrop}>
         <SelectDropdown
+          defaultButtonText="0"
           defaultValue={exerciseDuration}
           buttonStyle={styles.exerciseDropdown}
           data={timeIntervel}
           onSelect={(event) => {
-            getDuration(event);
+            setDuration(event);
           }}
         />
       </View>
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
   exerciseView: {
     fontSize: 40,
     margin: 40,
-    marginLeft: 95,
+    marginLeft: 105,
   },
   exerciseText: {
     paddingBottom: 10,
@@ -41,19 +43,19 @@ const styles = StyleSheet.create({
   exerciseDropdown: {
     backgroundColor: "#bac9d6",
     textDecorationColor: "white",
-    width: 100,
+    width: 140,
     padding: 0,
-    marginLeft: 70,
+    marginLeft: 30,
     text: {
-      marginLeft: 35,
+      marginLeft: 55,
     },
     borderRadius: 10,
   },
   exerciseDrop: {
     backgroundColor: "rgb(0,150,255)",
-    width: 100,
+    width: 140,
     padding: 0,
-    marginLeft: 50,
+    marginLeft: 20,
     text: {
       marginLeft: 35,
     },

@@ -1,17 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { TimePicker } from "react-native-simple-time-picker";
-import SelectDurationScreen from "./SelectDurationScreen";
-import BeepIntervalScreen from "./BeepIntervalScreen";
-const EditScreen = ({ navigation }) => {
-  const exerciseDurations = navigation.getParam("exerciseDuration");
-  const beepIntervals = navigation.getParam("beepInterval");
-  const getEditedDuration = navigation.getParam("getEditedDuration");
-  const getEditedBeepInterval = navigation.getParam("getEditedBeepInterval");
-  const timevalue = navigation.getParam("timevalue");
-  const getEditedTimeValue = navigation.getParam("getEditedTimeValue");
+import SelectDurationScreen from "./../components/SelectDuration";
+import BeepIntervalScreen from "./../components/BeepInterval";
+const EditScreen = ({ navigation, route }) => {
+
+  const {exerciseDuration, beepInterval, setEditedDuration,setEditedBeepInterval,timevalue,setEditedTimeValue} = route.params
   const [value, setValue] = useState(timevalue);
-  // console.log("edit",timevalue)
   return (
     <View>
       <Text style={styles.text}>At what time you want to excercise daily?</Text>
@@ -20,19 +15,19 @@ const EditScreen = ({ navigation }) => {
           value={value}
           onChange={(event) => {
             setValue(event);
-            getEditedTimeValue(event);
+            setEditedTimeValue(event);
           }}
         />
       </View>
 
       <SelectDurationScreen
-        exerciseDuration={exerciseDurations}
-        getDuration={getEditedDuration}
+        exerciseDuration={exerciseDuration}
+        setDuration={setEditedDuration}
       />
 
       <BeepIntervalScreen
-        beepInterval={beepIntervals}
-        getBeepInterval={getEditedBeepInterval}
+        beepInterval={beepInterval}
+        setBeepInreval={setEditedBeepInterval}
       />
 
       <View style={styles.button}>

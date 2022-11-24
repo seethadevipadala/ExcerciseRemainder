@@ -2,18 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
-const BeepIntervalScreen = ({ getBeepInterval, beepInterval }) => {
-  const timeIntervel = [
-    "15 sec",
-    "30 sec",
-    "45 sec",
-    "1 min",
-    "2 min",
-    "3 min",
-    "4 min",
-    "5 min",
-    "10 min",
-  ];
+const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
+  const timeIntervel = ["1 min", "2 min", "3 min", "4 min", "5 min"];
   return (
     <View>
       <Text style={{ alignSelf: "center" }}> interval for repeat steps</Text>
@@ -22,12 +12,13 @@ const BeepIntervalScreen = ({ getBeepInterval, beepInterval }) => {
       </Text>
       <View>
         <SelectDropdown
+          defaultButtonText="0"
           defaultValue={beepInterval}
           buttonStyle={styles.dropdown}
           dropdownStyle={styles.dropdownList}
           data={timeIntervel}
           onSelect={(event) => {
-            getBeepInterval(event);
+            setBeepInreval(event);
           }}
         />
       </View>
