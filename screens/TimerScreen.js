@@ -6,7 +6,7 @@ import { Audio } from "expo-av";
 const TimerScreen = ({ navigation, route }) => {
   const [sound, setSound] = React.useState();
   const { ExerciseDuration, BeepInterval } = route.params;
-  const Duration = "0 hr 2 min";
+  const Duration = ExerciseDuration;
   var beepIntervalValue = BeepInterval.split(" ");
   var beepValue = parseInt(beepIntervalValue[0], 10) * 60000;
   const [resetBeep, setResetBeep] = useState(beepValue);
@@ -47,7 +47,6 @@ const TimerScreen = ({ navigation, route }) => {
           setIsFinish(true);
         }
         setResetBeep((val) => val - 1000);
-        console.log(resetBeep);
       }, 1000);
     }
 
