@@ -1,45 +1,132 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Button } from "react-native";
 import { TimePicker } from "react-native-simple-time-picker";
-import SelectDurationScreen from "./../components/SelectDuration";
-import BeepIntervalScreen from "./../components/BeepInterval";
-const EditScreen = ({ navigation, route }) => {
+import SelectDuration from "./../components/SelectDuration";
+import BeepInterval from "./../components/BeepInterval";
+import { useFonts } from "expo-font";
+import TimerScreen from "./TimerScreen";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useTheme, Card, Title, Paragraph } from "react-native-paper";
 
-  const {exerciseDuration, beepInterval, setEditedDuration,setEditedBeepInterval,timevalue,setEditedTimeValue} = route.params
+const EditScreen = ({ navigation, route }) => {
+  // console.log(route, "edit");
+  const [loaded] = useFonts({
+    MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+  });
+   const {
+    exerciseDuration,
+    beepInterval,
+    setEditedDuration,
+    setEditedBeepInterval,
+    timevalue,
+    setEditedTimeValue,
+    timestamp
+  } = route.params;
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [timestamps, setTimestamp] = useState(timestamp);
+  console.log('from edittimestamp',timestamp);
+  
+  const [date, setDate] = useState(new Date(timestamps));
+ 
   const [value, setValue] = useState(timevalue);
   return (
-    <View>
-      <Text style={styles.text}>At what time you want to excercise daily?</Text>
-      <View style={styles.container}>
-        <TimePicker
+    <Card
+      style={{
+        backgroundColor: "rgb(255,255,255)",
+        height: 440,
+        width: 350,
+        borderRadius: 20,
+        marginLeft: 22,
+      }}
+    >
+      <View>
+        <Text style={styles.text}>
+          At what time you want to excercise daily?
+        </Text>
+        <View style={{ marginLeft: 130, marginRight: 130, marginTop: 30 }}>
+          <Text style={{ marginLeft: 14, fontFamily: "MetropolisBlackItalic" }}>
+            {value.hours}:{value.minutes} {value.ampm}
+          </Text>
+          <Button
+            title="Set Time"
+            onPress={() => {
+              setShowTimePicker(true);
+            }}
+          />
+        </View>
+        <View style={styles.container}>
+          {/* <TimePicker
+          placeholder="00:00"
           value={value}
           onChange={(event) => {
             setValue(event);
             setEditedTimeValue(event);
           }}
+        /> */}
+
+          {showTimePicker && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode="time"
+              is24Hour={false}
+              display="default"
+              onChange={(e) => {
+                setShowTimePicker(false);
+                setTimestamp(e.nativeEvent.timestamp);
+                setDate(new Date(e.nativeEvent.timestamp));
+                // console.log(
+                //   new Date(e.nativeEvent.timestamp).getHours(),
+                //   new Date(e.nativeEvent.timestamp).minutes(),
+                //   "hoooooooooo"
+                // );
+                setEditedTimeValue((prevTimeValue) => ({
+                  ...prevTimeValue,
+                  hours: new Date(e.nativeEvent.timestamp).getHours(),
+                  minutes: new Date(e.nativeEvent.timestamp).getMinutes(),
+                  ampm:
+                    new Date(e.nativeEvent.timestamp).getHours() >= 12
+                      ? "PM"
+                      : "AM",
+                }));
+                setValue((prevTimeValue) => ({
+                  ...prevTimeValue,
+                  hours: new Date(e.nativeEvent.timestamp).getHours(),
+                  minutes: new Date(e.nativeEvent.timestamp).getMinutes(),
+                  ampm:
+                    new Date(e.nativeEvent.timestamp).getHours() >= 12
+                      ? "PM"
+                      : "AM",
+                }));
+              }}
+            />
+          )}
+        </View>
+
+        <SelectDuration
+          exerciseDuration={exerciseDuration}
+          setDuration={setEditedDuration}
         />
-      </View>
 
-      <SelectDurationScreen
-        exerciseDuration={exerciseDuration}
-        setDuration={setEditedDuration}
-      />
-
-      <BeepIntervalScreen
-        beepInterval={beepInterval}
-        setBeepInreval={setEditedBeepInterval}
-      />
-
-      <View style={styles.button}>
-        <Button
-          onPress={() => {
-            navigation.navigate("HomeScreen");
-          }}
-          title="Save"
-          color="#91abc2"
+        <BeepInterval
+          beepInterval={beepInterval}
+          setBeepInreval={setEditedBeepInterval}
         />
+
+        <View style={styles.button}>
+          <Button
+            onPress={() => {
+              console.log(timestamps,"rrrrr");
+              navigation.navigate("HomeScreen", {
+                timestamps: timestamps,
+              });
+            }}
+            title="Save"
+            color="#1e73fc"
+          />
+        </View>
       </View>
-    </View>
+    </Card>
   );
 };
 
@@ -53,8 +140,9 @@ const styles = StyleSheet.create({
     padding: 9,
   },
   text: {
-    marginLeft: 70,
+    marginLeft: 25,
     marginTop: 30,
+    fontFamily: "MetropolisBlackItalic",
   },
   dropdown: {
     backgroundColor: "#bac9d6",
@@ -90,7 +178,7 @@ const styles = StyleSheet.create({
   },
   exerciseDropdown: {
     backgroundColor: "#bac9d6",
-    textDecorationColor: "white",
+    textDecorationColor: "black",
     width: 100,
     padding: 0,
     marginLeft: 70,

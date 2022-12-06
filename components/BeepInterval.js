@@ -1,18 +1,96 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import SelectDropdown from "react-native-select-dropdown";
+import { Button } from "react-native-paper";
 
+import SelectDropdown from "react-native-select-dropdown";
+import { useFonts } from "expo-font";
 const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
   const timeIntervel = ["1 min", "2 min", "3 min", "4 min", "5 min"];
+  useEffect(() => {
+    console.log(beepInterval, "useEffect");
+    setBeepSeconds(beepSeconds);
+  }, [beepInterval]);
+  const [beepMinutes, setbeepMinutes] = useState(0);
+  const [beepSeconds, setBeepSeconds] = useState(0);
+  const [loaded] = useFonts({
+    MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+  });
   return (
     <View>
-      <Text style={{ alignSelf: "center" }}> interval for repeat steps</Text>
-      <Text style={{ alignSelf: "center", marginBottom: 20 }}>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontSize: 17,
+          fontFamily: "MetropolisBlackItalic",
+        }}
+      >
+        Interval for repeat steps
+      </Text>
+      <Text
+        style={{
+          alignSelf: "center",
+          fontSize: 15,
+          marginBottom: 20,
+          color: "black",
+          fontFamily: "MetropolisBlackItalic",
+        }}
+      >
         (your phone will beep on every interval)
       </Text>
-      <View>
-        <SelectDropdown
+      <View style={{ flexDirection: "row", marginLeft: 40, marginRight: 40 }}>
+        <Text
+          style={{
+            color: "black",
+            fontSize: 15,
+            marginTop: 10,
+            paddingRight: 20,
+            fontFamily: "MetropolisBlackItalic",
+          }}
+        >
+          {`${beepMinutes}`}:{`${beepSeconds} SEC`}
+        </Text>
+        <Button
+          mode="outlined"
+          style={{ width: 95 }}
+          onPress={() => {
+            if (beepSeconds === 50) {
+              setbeepMinutes(beepMinutes + 1);
+
+              setBeepSeconds(0);
+            } else {
+              setBeepSeconds(beepSeconds + 10);
+              setBeepInreval(beepSeconds + 10);
+            }
+          }}
+        >
+          +10 sec
+        </Button>
+        <Button
+          mode="outlined"
+          style={{ width: 100 }}
+          onPress={() => {
+            console.log(beepSeconds, "beepSeconds");
+            if (beepSeconds === 0) {
+              setbeepMinutes(beepMinutes-1);
+
+              setBeepSeconds(50);
+            } else {
+              setBeepInreval(beepMinutes - 10);
+              setBeepSeconds(beepSeconds - 10);
+            }
+            if (beepMinutes === 0 && beepSeconds === 0) {
+              setbeepMinutes(0);
+              setBeepSeconds(0);
+            }
+            
+          }}
+        >
+          -10 sec
+        </Button>
+        {/* <SelectDropdown
+          buttonTextStyle={{ color: "black" }}
           defaultButtonText="0"
+          selectedRowTextStyle={{ color: "#1e73fc" }}
           defaultValue={beepInterval}
           buttonStyle={styles.dropdown}
           dropdownStyle={styles.dropdownList}
@@ -20,7 +98,7 @@ const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
           onSelect={(event) => {
             setBeepInreval(event);
           }}
-        />
+        /> */}
       </View>
     </View>
   );
@@ -35,7 +113,7 @@ const styles = StyleSheet.create({
     marginLeft: 70,
   },
   dropdown: {
-    backgroundColor: "#bac9d6",
+    backgroundColor: "#dde3ed",
     width: 110,
     marginBottom: 20,
     marginRight: 145,
@@ -45,7 +123,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   drop: {
-    backgroundColor: "rgb(0,150,255)",
+    backgroundColor: "#1e73fc",
     width: 100,
     marginLeft: 150,
     marginBottom: 30,

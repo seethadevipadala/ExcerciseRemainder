@@ -1,51 +1,58 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { BackHandler } from "react-native";
+import DatePicker from "react-native-date-picker";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Text, View, ScrollView, StyleSheet, Button } from "react-native";
-import SelectDurationScreen from "../components/SelectDuration";
-import { TimePicker } from "react-native-simple-time-picker";
-import BeepIntervalScreen from "../components/BeepInterval";
+import SelectDuration from "../components/SelectDuration";
+// import { TimePicker } from "react-native-simple-time-picker";
+import TimePicker from "react-native-wheel-time-picker";
+import BeepInterval from "../components/BeepInterval";
 import Icon from "react-native-vector-icons/Feather";
 import * as Notifications from "expo-notifications";
-
+import setNotificationCategoryAsync from "./../utils/InitializeNotification";
+import setNotificationHandler from "./../utils/InitializeNotification";
 import { useNavigation } from "@react-navigation/native";
-
-Notifications.setNotificationCategoryAsync("category", [
-  {
-    buttonTitle: "Start",
-    identifier: "0",
-    options: {
-      opensAppToForeground: true,
-    },
-  },
-
-  {
-    buttonTitle: "Reject",
-
-    identifier: "1",
-
-    options: {
-      opensAppToForeground: false,
-    },
-  },
-  {
-    buttonTitle: "5 min delay",
-
-    identifier: "2",
-    options: {
-      opensAppToForeground: false,
-    },
-  },
-]);
-
-const HomeScreen = () => {
+import { useTheme, Card, Title, Paragraph } from "react-native-paper";
+import { useFonts } from "expo-font";
+import moment from "moment";
+import MetropolisBlackItalic from "./../assets/Metropolis-BlackItalic.otf";
+import DateTimePicker from "@react-native-community/datetimepicker";
+const HomeScreen = ({ route }) => {
+  // const MILLISECONDS_PER_MINUTE = 60 * 1000;
+  // const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
+  // const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
+  // const [loaded] = useFonts({
+  //   MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+  // });
+  // console.log(route, "lll");
+  // const { timestamps } = route.params;
+  // console.log(timestamps);
+  const [timestamp, setTimestamp] = useState(route?.params?.timestamp);
+  const [date, setDate] = useState(new Date(timestamp));
+  // var time = new Date(timestamp);
+  // var timeHours = time.getHours();
+  // var timeMinutes = time.getMinutes();
+  // console.log(timeHours, timeMinutes, "hhhhhhhhhhhhhhh");
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const theme = useTheme();
   const navigation = useNavigation();
-  const [exerciseDuration, setExerciseDuration] = useState();
+  const [exerciseDurationHours, setExerciseDurationHours] = useState(0);
+  const [exerciseDurationMinutes, setExerciseDurationMinutes] = useState(0);
   const [beepIntervals, setBeepIntervals] = useState();
   const [isIconDisabled, setIsIconDisabled] = useState(false);
-  const setDuration = (e) => {
-    setExerciseDuration(e);
+  const [aa, setAa] = useState(false);
+  console.log(exerciseDurationHours, exerciseDurationMinutes, "homevalues");
+  // const fun = (e) => {
+  //   setExerciseDuration(e);
+  // };
+  const setDurationHour = (e) => {
+    setExerciseDurationHours(e);
+    console.log("hours", e);
+  };
+  const setDurationMinutes = (e) => {
+    setExerciseDurationMinutes(e);
+    console.log("minutes", e);
   };
   const setBeepInreval = (e) => {
     setBeepIntervals(e);
@@ -54,49 +61,59 @@ const HomeScreen = () => {
     setBeepIntervals(e);
   };
   const setEditedDuration = (e) => {
-    setExerciseDuration(e);
+    setExerciseDurationHours(e);
   };
   const setEditedTimeValue = (e) => {
     setTimeValue(e);
   };
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    }),
+
+  const [timevalue, setTimeValue] = useState({
+    hours: 1,
+    minutes: 0,
+    ampm: "am",
   });
+
   const storeData = async () => {
     const items = {
       storedTimeValue: timevalue,
-      storedExerciseDuration: exerciseDuration,
+      storedExerciseDurationHours: exerciseDurationHours,
+      storedExerciseDurationMinutes: exerciseDurationMinutes,
+
       storedBeepIntervals: beepIntervals,
+      storeIcon: true,
+      storedTimeStamp: timestamp,
     };
+
     try {
       await AsyncStorage.setItem("KEY", JSON.stringify(items));
     } catch (error) {}
   };
+
   const getData = () => {
     try {
       AsyncStorage.getItem("KEY").then((value) => {
         if (value != null) {
-          var user = JSON.parse(value);
-          setTimeValue(user.storedTimeValue);
-          setExerciseDuration(user.storedExerciseDuration);
-          setBeepIntervals(user.storedBeepIntervals);
+          var values = JSON.parse(value);
+          setTimestamp(values.storedTimeStamp);
+          setTimeValue(values.storedTimeValue);
+          setExerciseDurationHours(values.storedExerciseDurationHours || 0);
+          setExerciseDurationMinutes(values.storedExerciseDurationMinutes || 0);
+
+          setBeepIntervals(values.storedBeepIntervals);
+          setIsIconDisabled(values.storeIcon);
+          setDate(new Date(values.storedTimeStamp));
         }
       });
     } catch (error) {
       console.log(error);
     }
   };
+  // console.log("timeValue from store", timevalue);
+
   useEffect(() => {
     getData();
   }, []);
-  const [timevalue, setTimeValue] = useState({
-    hours: 0,
-    minutes: 0,
-  });
+
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -120,15 +137,6 @@ const HomeScreen = () => {
       } else {
         alert("Must use physical device for Push Notifications");
       }
-
-      if (Platform.OS === "android") {
-        Notifications.setNotificationChannelAsync("default", {
-          name: "default",
-          importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
-          lightColor: "#FF231F7C",
-        });
-      }
     };
 
     getPermission();
@@ -136,9 +144,14 @@ const HomeScreen = () => {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         if (response.actionIdentifier === "0") {
+          console.log(response.notification.request.content.data);
           navigation.navigate("TimerScreen", {
-            ExerciseDuration:
-              response.notification.request.content.data.exerciseDuration,
+            exerciseDurationHours:
+              response.notification.request.content.data.exerciseDurationHours,
+            exerciseDurationMinutes:
+              response.notification.request.content.data
+                .exerciseDurationMinutes,
+
             BeepInterval:
               response.notification.request.content.data.beepInterval,
           });
@@ -167,7 +180,10 @@ const HomeScreen = () => {
     const storedData = await AsyncStorage.getItem("KEY");
     const storedValue = JSON.parse(storedData);
     const convertedHour =
-      storedValue.storedTimeValue.ampm === "pm"
+      storedValue.storedTimeValue.hours == "12 " &&
+      storedValue.storedTimeValue.ampm == "pm"
+        ? storedValue.storedTimeValue.hours
+        : storedValue.storedTimeValue.ampm === "pm"
         ? storedValue.storedTimeValue.hours + 12
         : storedValue.storedTimeValue.hours;
     const latestNotifacationId = await Notifications.scheduleNotificationAsync({
@@ -177,7 +193,8 @@ const HomeScreen = () => {
         body: "It's time to start Exercise",
         categoryIdentifier: "category",
         data: {
-          exerciseDuration: exerciseDuration,
+          exerciseDurationHours: exerciseDurationHours,
+          exerciseDurationMinutes: exerciseDurationMinutes,
           beepInterval: beepIntervals,
         },
         color: "Green",
@@ -216,56 +233,159 @@ const HomeScreen = () => {
       },
     });
   };
+  // const [date, setDate] = useState(new Date());
+  // console.log(Date.now(), "val");
+  // console.log(moment(1669974132734).format('HH:MM:SS'));
+
+  // const [time, setTime] = useState(Date.now() % MILLISECONDS_PER_DAY);
+  // const [hours, minutes, ampm] = useMemo(() => {
+  //   setTimeValue((prevTimeValue) => ({
+  //     ...prevTimeValue,
+  //     hours: hours,
+  //     minutes: minutes,
+  //     ampm: ampm,
+  //   }));
+  //   return [
+  //     Math.floor(time / MILLISECONDS_PER_HOUR),
+  //     Math.floor((time % MILLISECONDS_PER_HOUR) / MILLISECONDS_PER_MINUTE),
+  //     time / MILLISECONDS_PER_HOUR >= 12 ? "PM" : "AM",
+  //   ];
+  // }, [time]);
+
+  // console.log("from timepicker convertion", time);
+  // console.log("from timestamp", moment(time).format());
+  // let a;
+  // var y = moment.duration(time, "milliseconds");
+  // console.log("yyy", y);
+  // var h = Math.floor(y.asHours());
+  // console.log("dateconversion to hours", h);
+  // console.log("after stored", timevalue);
+  // console.log("from timepicker convertion", time);
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: "rgb(242,242,242)" }}>
       <View style={styles.edit}>
         {isIconDisabled && (
           <Icon
             name="edit"
             size={30}
-            backgroundColor="#3b5998"
+            // backgroundColor="white"
             onPress={() => {
               navigation.navigate("EditScreen", {
-                exerciseDuration: exerciseDuration,
+                exerciseDuration: exerciseDurationHours,
                 beepInterval: beepIntervals,
                 setEditedDuration: setEditedDuration,
                 setEditedBeepInterval: setEditedBeepInterval,
                 timevalue: timevalue,
+                timestamp: timestamp,
                 setEditedTimeValue: setEditedTimeValue,
               });
             }}
           />
         )}
       </View>
-      <Text style={{ marginTop: 20, marginLeft: 50, fontSize: 15 }}>
-        At what time you want to excercise daily?
-      </Text>
 
-      <View style={styles.container}>
-        <TimePicker
-          isAmpm={true}
-          value={timevalue}
-          onChange={(e) => {
-            setTimeValue(e);
+      <Card
+        style={{
+          backgroundColor: "rgb(255,255,255)",
+          height: 440,
+          width: 350,
+          borderRadius: 20,
+          marginLeft: 22,
+        }}
+      >
+        <Text
+          style={{
+            alignContent: "center",
+            marginTop: 20,
+            marginLeft: 45,
+            fontSize: 13,
+            color: "black",
+            fontFamily: "MetropolisBlackItalic",
           }}
-        />
-      </View>
+        >
+          At what time you want to excercise daily?
+        </Text>
 
-      <SelectDurationScreen
-        setDuration={setDuration}
-        exerciseDuration={exerciseDuration}
-      />
-      <BeepIntervalScreen
-        setBeepInreval={setBeepInreval}
-        beepInterval={beepIntervals}
-      />
+        <View style={{ marginLeft: 130, marginRight: 130, marginTop: 30 }}>
+          <Text style={{ marginLeft: 14, fontFamily: "MetropolisBlackItalic" }}>
+            {timevalue.hours}:{timevalue.minutes} {timevalue.ampm}
+          </Text>
+          <Button
+            title="Set Time"
+            onPress={() => {
+              setShowTimePicker(true);
+            }}
+          />
+
+          {showTimePicker && (
+            <DateTimePicker
+              value={date}
+              mode="time"
+              is24Hour={false}
+              display="default"
+              onChange={(e) => {
+                // console.log(e);
+                setShowTimePicker(false);
+                setTimestamp(e.nativeEvent.timestamp);
+                setDate(new Date(e.nativeEvent.timestamp));
+                // console.log(
+                //   new Date(e.nativeEvent.timestamp).getHours(),
+                //   new Date(e.nativeEvent.timestamp).minutes(),
+                //   "hoooooooooo"
+                // );
+                setTimeValue((prevTimeValue) => ({
+                  ...prevTimeValue,
+                  hours:
+                    new Date(e.nativeEvent.timestamp).getHours() === 0
+                      ? 12
+                      : new Date(e.nativeEvent.timestamp).getHours(),
+                  minutes: new Date(e.nativeEvent.timestamp).getMinutes(),
+                  ampm:
+                    new Date(e.nativeEvent.timestamp).getHours() >= 12
+                      ? "PM"
+                      : "AM",
+                }));
+              }}
+            />
+          )}
+        </View>
+        <SelectDuration
+          // fun={fun}
+          setDurationHour={setDurationHour}
+          setDurationMinute={setDurationMinutes}
+          exerciseDurationMinutes={exerciseDurationMinutes}
+          exerciseDurationHours={exerciseDurationHours}
+        />
+        {/* <Card.Title title="Card Title" subtitle="Card Subtitle" />
+        <Card.Content>
+          <Title>Card title</Title>
+          <Paragraph>Card content</Paragraph>
+        </Card.Content>
+        <Card.Actions>
+          <Button>Cancel</Button>
+          <Button>Ok</Button>
+        </Card.Actions> */}
+
+        <BeepInterval
+          setBeepInreval={setBeepInreval}
+          beepInterval={beepIntervals}
+        />
+      </Card>
+
       <View style={styles.button}>
         <Button
+          // disabled={
+          // !exerciseDuration || !beepIntervals
+          // || !timevalue
+          // }
           onPress={() => {
+            // setTimeValue([...timevalue],hours=hours);
+
             storeData();
-            scheduleLocalNotification();
+            // fun();
             setIsIconDisabled(true);
 
+            scheduleLocalNotification();
             alert(
               `You will get notification on ${
                 timevalue.hours < 10 ? "0" + timevalue.hours : timevalue.hours
@@ -277,8 +397,7 @@ const HomeScreen = () => {
             );
           }}
           title="Save"
-          color="#91abc2"
-          disabled={!exerciseDuration || !beepIntervals || !timevalue}
+          color="#1e73fc"
         />
       </View>
     </ScrollView>
@@ -288,7 +407,16 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   edit: {
     marginTop: 40,
-    marginLeft: 340,
+    marginLeft: 360,
+    backgroundColor: "white",
+  },
+  timeButton: {
+    marginLeft: 140,
+    marginRight: 130,
+    height: 80,
+    borderRadius: 50,
+    marginTop: 100,
+    padding: 9,
   },
   button: {
     marginLeft: 140,
@@ -299,10 +427,12 @@ const styles = StyleSheet.create({
     padding: 9,
   },
   container: {
-    flex: 1,
-    paddingHorizontal: 60,
-    justifyContent: "center",
-    alignItems: "center",
+    // flex: 1,
+    // paddingHorizontal: 60,
+    // justifyContent: "center",
+    // alignItems: "center",
+    // height: 200,
+    // width: 200,
   },
 });
 
