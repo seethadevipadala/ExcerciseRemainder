@@ -39,26 +39,38 @@ const HomeScreen = ({ route }) => {
   const navigation = useNavigation();
   const [exerciseDurationHours, setExerciseDurationHours] = useState(0);
   const [exerciseDurationMinutes, setExerciseDurationMinutes] = useState(0);
-  const [beepIntervals, setBeepIntervals] = useState();
+  // const [beepIntervalSeconds, setBeepIntervalSeconds] = useState();
+  const [BeepMinutes, setBeepMinutes] = useState(0);
+  const [BeepSeconds, setBeepSeconds] = useState(0);
   const [isIconDisabled, setIsIconDisabled] = useState(false);
   const [aa, setAa] = useState(false);
   console.log(exerciseDurationHours, exerciseDurationMinutes, "homevalues");
+  console.log(BeepMinutes, BeepSeconds, "homevalues");
+
   // const fun = (e) => {
   //   setExerciseDuration(e);
   // };
+  const setBeepIntervalSecond = (e) => {
+    setBeepSeconds(e);
+    console.log(e, "seconds");
+  };
+  const setBeepIntervalMinute = (e) => {
+    console.log(e, "minutes");
+    setBeepMinutes(e);
+  };
   const setDurationHour = (e) => {
     setExerciseDurationHours(e);
-    console.log("hours", e);
+    // console.log("hours", e);
   };
   const setDurationMinutes = (e) => {
     setExerciseDurationMinutes(e);
-    console.log("minutes", e);
+    // console.log("minutes", e);
   };
-  const setBeepInreval = (e) => {
-    setBeepIntervals(e);
-  };
+  // const setBeepInreval = (e) => {
+  //   setBeepIntervalSeconds(e);
+  // };
   const setEditedBeepInterval = (e) => {
-    setBeepIntervals(e);
+    setBeepIntervalSeconds(e);
   };
   const setEditedDuration = (e) => {
     setExerciseDurationHours(e);
@@ -79,7 +91,8 @@ const HomeScreen = ({ route }) => {
       storedExerciseDurationHours: exerciseDurationHours,
       storedExerciseDurationMinutes: exerciseDurationMinutes,
 
-      storedBeepIntervals: beepIntervals,
+      storedBeepIntervalMinutes: BeepMinutes,
+      storedBeepIntervalSeconds: BeepSeconds,
       storeIcon: true,
       storedTimeStamp: timestamp,
     };
@@ -98,8 +111,9 @@ const HomeScreen = ({ route }) => {
           setTimeValue(values.storedTimeValue);
           setExerciseDurationHours(values.storedExerciseDurationHours || 0);
           setExerciseDurationMinutes(values.storedExerciseDurationMinutes || 0);
-
-          setBeepIntervals(values.storedBeepIntervals);
+          setBeepMinutes(values.storedBeepIntervalMinutes);
+          setBeepSeconds(values.storedBeepIntervalSeconds);
+          // setBeepIntervalSecond(values.storedBeepIntervals);
           setIsIconDisabled(values.storeIcon);
           setDate(new Date(values.storedTimeStamp));
         }
@@ -144,7 +158,6 @@ const HomeScreen = ({ route }) => {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         if (response.actionIdentifier === "0") {
-          console.log(response.notification.request.content.data);
           navigation.navigate("TimerScreen", {
             exerciseDurationHours:
               response.notification.request.content.data.exerciseDurationHours,
@@ -195,7 +208,7 @@ const HomeScreen = ({ route }) => {
         data: {
           exerciseDurationHours: exerciseDurationHours,
           exerciseDurationMinutes: exerciseDurationMinutes,
-          beepInterval: beepIntervals,
+          beepInterval: BeepSeconds,
         },
         color: "Green",
         vibrate: true,
@@ -272,7 +285,7 @@ const HomeScreen = ({ route }) => {
             onPress={() => {
               navigation.navigate("EditScreen", {
                 exerciseDuration: exerciseDurationHours,
-                beepInterval: beepIntervals,
+                beepInterval: BeepSeconds,
                 setEditedDuration: setEditedDuration,
                 setEditedBeepInterval: setEditedBeepInterval,
                 timevalue: timevalue,
@@ -367,8 +380,10 @@ const HomeScreen = ({ route }) => {
         </Card.Actions> */}
 
         <BeepInterval
-          setBeepInreval={setBeepInreval}
-          beepInterval={beepIntervals}
+          setBeepIntervalSecond={setBeepIntervalSecond}
+          setBeepIntervalMinute={setBeepIntervalMinute}
+          BeepMinutes={BeepMinutes}
+          BeepSeconds={BeepSeconds}
         />
       </Card>
 
@@ -393,7 +408,7 @@ const HomeScreen = ({ route }) => {
                 timevalue.minutes < 10
                   ? "0" + timevalue.minutes
                   : timevalue.minutes
-              }`
+              } ${timevalue.ampm}`
             );
           }}
           title="Save"

@@ -4,14 +4,21 @@ import { Button } from "react-native-paper";
 
 import SelectDropdown from "react-native-select-dropdown";
 import { useFonts } from "expo-font";
-const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
+const BeepIntervalScreen = ({
+  setBeepIntervalMinute,
+  BeepMinutes,
+  setBeepIntervalSecond,
+  BeepSeconds,
+}) => {
   const timeIntervel = ["1 min", "2 min", "3 min", "4 min", "5 min"];
   useEffect(() => {
-    console.log(beepInterval, "useEffect");
-    setBeepSeconds(beepSeconds);
-  }, [beepInterval]);
+    // console.log(beepInterval, "useEffect");
+    setBeepSeconds(BeepSeconds);
+    setbeepMinutes(BeepMinutes);
+  }, [BeepMinutes, BeepSeconds]);
   const [beepMinutes, setbeepMinutes] = useState(0);
   const [beepSeconds, setBeepSeconds] = useState(0);
+  console.log(BeepMinutes, BeepSeconds)
   const [loaded] = useFonts({
     MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
   });
@@ -57,9 +64,12 @@ const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
               setbeepMinutes(beepMinutes + 1);
 
               setBeepSeconds(0);
+              setBeepIntervalMinute(beepMinutes + 1);
+              setBeepIntervalSecond(0);
             } else {
               setBeepSeconds(beepSeconds + 10);
-              setBeepInreval(beepSeconds + 10);
+              setBeepIntervalSecond(beepSeconds + 10);
+              setBeepIntervalMinute(beepMinutes);
             }
           }}
         >
@@ -69,20 +79,21 @@ const BeepIntervalScreen = ({ setBeepInreval, beepInterval }) => {
           mode="outlined"
           style={{ width: 100 }}
           onPress={() => {
-            console.log(beepSeconds, "beepSeconds");
-            if (beepSeconds === 0) {
-              setbeepMinutes(beepMinutes-1);
-
-              setBeepSeconds(50);
-            } else {
-              setBeepInreval(beepMinutes - 10);
-              setBeepSeconds(beepSeconds - 10);
-            }
+            // console.log(beepSeconds, "beepSeconds");
             if (beepMinutes === 0 && beepSeconds === 0) {
               setbeepMinutes(0);
               setBeepSeconds(0);
+            } else if (beepSeconds === 0) {
+              setbeepMinutes(beepMinutes - 1);
+
+              setBeepSeconds(50);
+              setBeepIntervalMinute(beepMinutes - 1);
+              setBeepIntervalSecond(50);
+            } else {
+              setBeepIntervalSecond(beepSeconds - 10);
+              setBeepSeconds(beepSeconds - 10);
+              setBeepIntervalMinute(beepMinutes);
             }
-            
           }}
         >
           -10 sec

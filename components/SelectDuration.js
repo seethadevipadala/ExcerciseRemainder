@@ -76,10 +76,10 @@ const SelectDurationScreen = ({
               setDurationMinutes(0);
               setDurationHours(durationHours + 1);
               setDurationMinute(0);
-              setDurationHour(durationHours+1)
+              setDurationHour(durationHours + 1);
             } else {
               setDurationHour(durationHours);
-              setDurationMinute(durationMinutes+10);
+              setDurationMinute(durationMinutes + 10);
             }
           }}
         >
@@ -88,20 +88,26 @@ const SelectDurationScreen = ({
         <Button
           mode="outlined"
           style={{ width: 95 }}
-          // onPress={() => {
-          //   if (durationMinutes === 0) {
-          //     setDurationMinutes(50);
-
-          //     setDurationHours(durationHours - 1);
-          //     setDurationHour(durationMinutes - 1);
-          //   } else {
-          //     setDurationMinute(durationMinutes - 10);
-          //   }
-          //   if (durationMinutes === 0 && durationHours === 0) {
-          //     setDurationHours(0);
-          //     setDurationMinutes(0);
-          //   }
-          // }}
+          onPress={() => {
+            if (durationMinutes === 0 && durationHours === 0) {
+              console.log("kk")
+              setDurationHours(0);
+              setDurationMinutes(0);
+            }
+            else if(durationMinutes === 0 && durationHours !== 0) {
+              setDurationMinutes(50);
+              setDurationHours(durationHours - 1);
+              setDurationHour(durationHours - 1);
+              setDurationMinute(50);
+            } else {
+              setDurationMinute(durationMinutes - 10);
+              setDurationMinute(durationMinutes - 10);
+              setDurationHour(durationHours);
+            };
+            // setDurationHour(durationHours);
+            // setDurationMinute(durationMinutes);
+           
+          }}
         >
           -10 min
         </Button>
