@@ -11,28 +11,36 @@ import { useTheme, Card, Title, Paragraph } from "react-native-paper";
 const EditScreen = ({ navigation, route }) => {
   // console.log(route, "edit");
   const [loaded] = useFonts({
-    MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+    MetropolisBlackRegular: require("./../assets/Metropolis-Regular.otf"),
   });
-   const {
+  const {
     exerciseDuration,
-    beepInterval,
+    beepIntervalMinutes,
+    beepIntervalSeconds,
     setEditedDuration,
+    setEditedDurationHours,
+    setEditedDurationMinutes,
+    exerciseDurationHours,
+    exerciseDurationMinutes,
     setEditedBeepInterval,
+    setEditedBeepIntervalMinutes,
+    setEditedBeepIntervalSeconds,
     timevalue,
     setEditedTimeValue,
-    timestamp
+    timestamp,
   } = route.params;
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [timestamps, setTimestamp] = useState(timestamp);
-  console.log('from edittimestamp',timestamp);
-  
+  console.log("from edit", beepIntervalMinutes, beepIntervalSeconds, exerciseDurationHours);
+
   const [date, setDate] = useState(new Date(timestamps));
- 
+
   const [value, setValue] = useState(timevalue);
   return (
     <Card
       style={{
         backgroundColor: "rgb(255,255,255)",
+        marginTop:60,
         height: 440,
         width: 350,
         borderRadius: 20,
@@ -44,7 +52,9 @@ const EditScreen = ({ navigation, route }) => {
           At what time you want to excercise daily?
         </Text>
         <View style={{ marginLeft: 130, marginRight: 130, marginTop: 30 }}>
-          <Text style={{ marginLeft: 14, fontFamily: "MetropolisBlackItalic" }}>
+          <Text
+            style={{ marginLeft: 14, fontFamily: "MetropolisBlackBoldItalic" }}
+          >
             {value.hours}:{value.minutes} {value.ampm}
           </Text>
           <Button
@@ -104,19 +114,24 @@ const EditScreen = ({ navigation, route }) => {
         </View>
 
         <SelectDuration
-          exerciseDuration={exerciseDuration}
-          setDuration={setEditedDuration}
+          exerciseDurationHours={exerciseDurationHours}
+          exerciseDurationMinutes={exerciseDurationMinutes}
+          setDurationHour={setEditedDurationHours}
+          setDurationMinute={setEditedDurationMinutes}
         />
 
         <BeepInterval
-          beepInterval={beepInterval}
-          setBeepInreval={setEditedBeepInterval}
+          BeepMinutes={beepIntervalMinutes}
+          BeepSeconds={beepIntervalSeconds}
+          // setBeepInreval={setEditedBeepInterval}
+          setBeepIntervalMinute={setEditedBeepIntervalMinutes}
+          setBeepIntervalSecond={setEditedBeepIntervalSeconds}
         />
 
         <View style={styles.button}>
           <Button
             onPress={() => {
-              console.log(timestamps,"rrrrr");
+              console.log(timestamps, "rrrrr");
               navigation.navigate("HomeScreen", {
                 timestamps: timestamps,
               });
@@ -140,9 +155,9 @@ const styles = StyleSheet.create({
     padding: 9,
   },
   text: {
-    marginLeft: 25,
+    marginLeft: 34,
     marginTop: 30,
-    fontFamily: "MetropolisBlackItalic",
+    fontFamily: "MetropolisBlackRegular",
   },
   dropdown: {
     backgroundColor: "#bac9d6",

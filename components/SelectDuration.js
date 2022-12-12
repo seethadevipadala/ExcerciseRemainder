@@ -11,13 +11,15 @@ const SelectDurationScreen = ({
   exerciseDurationMinutes,
 }) => {
   const [loaded] = useFonts({
-    MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+    MetropolisBlackBoldItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+    MetropolisBlackRegular: require("./../assets/Metropolis-Regular.otf"),
+
     // PlusJakartaSansExtraBold: require('./../assets/PlusJakartaSans.ttf'),
   });
   // if (!loaded) {
   //   return null;
   // }
-  console.log(exerciseDurationHours, exerciseDurationMinutes, "selectee");
+  console.log(exerciseDurationHours, exerciseDurationMinutes, "edited");
   // const values = await AsyncStorage.getItem("KEY");
   // let storedValue = JSON.parse(values);
   const val = exerciseDurationHours;
@@ -45,11 +47,11 @@ const SelectDurationScreen = ({
     <View style={styles.exerciseView}>
       <Text
         style={{
-          marginHorizontal: 48,
+          marginLeft: 70,
           paddingBottom: 10,
           color: "black",
           fontSize: 15,
-          fontFamily: "MetropolisBlackItalic",
+          fontFamily: "MetropolisBlackRegular",
         }}
       >
         How long you will excercise?
@@ -59,27 +61,35 @@ const SelectDurationScreen = ({
         <Text
           style={{
             color: "black",
-            fontSize: 15,
+            fontSize: 18,
             marginTop: 10,
             paddingRight: 20,
-            fontFamily: "MetropolisBlackItalic",
+            fontFamily: "MetropolisBlackBoldItalic",
           }}
         >
-          {durationHours}:{`${durationMinutes} MIN`}
+          {`${durationHours}`}:{`${durationMinutes} MIN`}
         </Text>
         <Button
           mode="outlined"
           style={{ width: 95 }}
           onPress={() => {
-            setDurationMinutes(durationMinutes + 10);
             if (durationMinutes === 50) {
-              setDurationMinutes(0);
+              // setDurationMinutes(durationMinutes + 10);
               setDurationHours(durationHours + 1);
-              setDurationMinute(0);
-              setDurationHour(durationHours + 1);
+
+              setDurationMinutes(0);
+              // setDurationHours(durationHours + 1);
+              // setDurationMinute(0);
+              //   setDurationHour(durationHours + 1);
             } else {
               setDurationHour(durationHours);
               setDurationMinute(durationMinutes + 10);
+            }
+            if (durationHours === 24 && durationMinutes === 50) {
+              setDurationHours(0);
+              setDurationMinutes(0);
+              setDurationHour(0);
+              setDurationMinute(0);
             }
           }}
         >
@@ -90,11 +100,10 @@ const SelectDurationScreen = ({
           style={{ width: 95 }}
           onPress={() => {
             if (durationMinutes === 0 && durationHours === 0) {
-              console.log("kk")
+              console.log("kk");
               setDurationHours(0);
               setDurationMinutes(0);
-            }
-            else if(durationMinutes === 0 && durationHours !== 0) {
+            } else if (durationMinutes === 0 && durationHours !== 0) {
               setDurationMinutes(50);
               setDurationHours(durationHours - 1);
               setDurationHour(durationHours - 1);
@@ -103,10 +112,9 @@ const SelectDurationScreen = ({
               setDurationMinute(durationMinutes - 10);
               setDurationMinute(durationMinutes - 10);
               setDurationHour(durationHours);
-            };
+            }
             // setDurationHour(durationHours);
             // setDurationMinute(durationMinutes);
-           
           }}
         >
           -10 min

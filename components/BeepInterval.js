@@ -18,17 +18,17 @@ const BeepIntervalScreen = ({
   }, [BeepMinutes, BeepSeconds]);
   const [beepMinutes, setbeepMinutes] = useState(0);
   const [beepSeconds, setBeepSeconds] = useState(0);
-  console.log(BeepMinutes, BeepSeconds)
+  console.log(BeepMinutes, BeepSeconds);
   const [loaded] = useFonts({
-    MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
+    MetropolisBlackRegular: require("./../assets/Metropolis-BlackItalic.otf"),
   });
   return (
     <View>
       <Text
         style={{
           alignSelf: "center",
-          fontSize: 17,
-          fontFamily: "MetropolisBlackItalic",
+          fontSize: 15,
+          fontFamily: "MetropolisBlackRegular",
         }}
       >
         Interval for repeat steps
@@ -39,7 +39,7 @@ const BeepIntervalScreen = ({
           fontSize: 15,
           marginBottom: 20,
           color: "black",
-          fontFamily: "MetropolisBlackItalic",
+          fontFamily: "MetropolisBlackRegular",
         }}
       >
         (your phone will beep on every interval)
@@ -48,10 +48,10 @@ const BeepIntervalScreen = ({
         <Text
           style={{
             color: "black",
-            fontSize: 15,
+            fontSize: 18,
             marginTop: 10,
             paddingRight: 20,
-            fontFamily: "MetropolisBlackItalic",
+            fontFamily: "MetropolisBlackBoldItalic",
           }}
         >
           {`${beepMinutes}`}:{`${beepSeconds} SEC`}

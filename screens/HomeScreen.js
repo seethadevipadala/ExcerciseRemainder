@@ -16,15 +16,16 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme, Card, Title, Paragraph } from "react-native-paper";
 import { useFonts } from "expo-font";
 import moment from "moment";
-import MetropolisBlackItalic from "./../assets/Metropolis-BlackItalic.otf";
+// import MetropolisBlackRegular from "./../assets/Metropolis-BlackItalic.otf";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { removeNotificationSubscription } from "expo-notifications";
 const HomeScreen = ({ route }) => {
   // const MILLISECONDS_PER_MINUTE = 60 * 1000;
   // const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
   // const MILLISECONDS_PER_DAY = 24 * MILLISECONDS_PER_HOUR;
-  // const [loaded] = useFonts({
-  //   MetropolisBlackItalic: require("./../assets/Metropolis-BlackItalic.otf"),
-  // });
+  const [loaded] = useFonts({
+    MetropolisBlackRegular: require("./../assets/Metropolis-BlackItalic.otf"),
+  });
   // console.log(route, "lll");
   // const { timestamps } = route.params;
   // console.log(timestamps);
@@ -69,11 +70,19 @@ const HomeScreen = ({ route }) => {
   // const setBeepInreval = (e) => {
   //   setBeepIntervalSeconds(e);
   // };
-  const setEditedBeepInterval = (e) => {
-    setBeepIntervalSeconds(e);
+  const setEditedBeepIntervalSeconds = (e) => {
+    setBeepSeconds(e);
   };
-  const setEditedDuration = (e) => {
+  const setEditedBeepIntervalMinutes = (e) => {
+    setBeepMinutes(e);
+  };
+  const setEditedDurationHours = (e) => {
+    console.log(e, "editedhours");
     setExerciseDurationHours(e);
+  };
+  const setEditedDurationMinutes = (e) => {
+    setExerciseDurationMinutes(e);
+    console.log(e, "editedminutes");
   };
   const setEditedTimeValue = (e) => {
     setTimeValue(e);
@@ -165,8 +174,10 @@ const HomeScreen = ({ route }) => {
               response.notification.request.content.data
                 .exerciseDurationMinutes,
 
-            BeepInterval:
-              response.notification.request.content.data.beepInterval,
+            beepIntervalMinutes:
+              response.notification.request.content.data.beepIntervalMinutes,
+            beepIntervalSeconds:
+              response.notification.request.content.data.beepIntervalSeconds,
           });
           Notifications.dismissAllNotificationsAsync();
         }
@@ -208,7 +219,8 @@ const HomeScreen = ({ route }) => {
         data: {
           exerciseDurationHours: exerciseDurationHours,
           exerciseDurationMinutes: exerciseDurationMinutes,
-          beepInterval: BeepSeconds,
+          beepIntervalMinutes: BeepMinutes,
+          beepIntervalSeconds: BeepSeconds,
         },
         color: "Green",
         vibrate: true,
@@ -274,6 +286,11 @@ const HomeScreen = ({ route }) => {
   // console.log("dateconversion to hours", h);
   // console.log("after stored", timevalue);
   // console.log("from timepicker convertion", time);
+  const removeItem = () => {
+    AsyncStorage.removeItem("jwt");
+    navigation.navigate("LoginScreen");
+    console.log("removed");
+  };
   return (
     <ScrollView style={{ backgroundColor: "rgb(242,242,242)" }}>
       <View style={styles.edit}>
@@ -284,10 +301,15 @@ const HomeScreen = ({ route }) => {
             // backgroundColor="white"
             onPress={() => {
               navigation.navigate("EditScreen", {
-                exerciseDuration: exerciseDurationHours,
-                beepInterval: BeepSeconds,
-                setEditedDuration: setEditedDuration,
-                setEditedBeepInterval: setEditedBeepInterval,
+                exerciseDurationHours: exerciseDurationHours,
+                exerciseDurationMinutes: exerciseDurationMinutes,
+
+                beepIntervalSeconds: BeepSeconds,
+                beepIntervalMinutes: BeepMinutes,
+                setEditedDurationHours: setEditedDurationHours,
+                setEditedDurationMinutes: setEditedDurationMinutes,
+                setEditedBeepIntervalMinutes: setEditedBeepIntervalMinutes,
+                setEditedBeepIntervalSeconds: setEditedBeepIntervalSeconds,
                 timevalue: timevalue,
                 timestamp: timestamp,
                 setEditedTimeValue: setEditedTimeValue,
@@ -310,18 +332,27 @@ const HomeScreen = ({ route }) => {
           style={{
             alignContent: "center",
             marginTop: 20,
-            marginLeft: 45,
-            fontSize: 13,
+            marginLeft: 27,
+            fontSize: 15,
             color: "black",
-            fontFamily: "MetropolisBlackItalic",
+            fontFamily: "MetropolisBlackRegular",
           }}
         >
           At what time you want to excercise daily?
         </Text>
 
         <View style={{ marginLeft: 130, marginRight: 130, marginTop: 30 }}>
-          <Text style={{ marginLeft: 14, fontFamily: "MetropolisBlackItalic" }}>
-            {timevalue.hours}:{timevalue.minutes} {timevalue.ampm}
+          <Text
+            style={{
+              fontSize: 17,
+              marginLeft: 5,
+              fontFamily: "MetropolisBlackBoldItalic",
+            }}
+          >
+            {timevalue.ampm === "PM" && timevalue.hours !== 12
+              ? timevalue.hours - 12
+              : timevalue.hours}
+            :{timevalue.minutes} {timevalue.ampm}
           </Text>
           <Button
             title="Set Time"
@@ -341,11 +372,7 @@ const HomeScreen = ({ route }) => {
                 setShowTimePicker(false);
                 setTimestamp(e.nativeEvent.timestamp);
                 setDate(new Date(e.nativeEvent.timestamp));
-                // console.log(
-                //   new Date(e.nativeEvent.timestamp).getHours(),
-                //   new Date(e.nativeEvent.timestamp).minutes(),
-                //   "hoooooooooo"
-                // );
+
                 setTimeValue((prevTimeValue) => ({
                   ...prevTimeValue,
                   hours:
@@ -390,12 +417,16 @@ const HomeScreen = ({ route }) => {
       <View style={styles.button}>
         <Button
           // disabled={
-          // !exerciseDuration || !beepIntervals
-          // || !timevalue
+          //   exerciseDurationHours ||
+          //   BeepMinutes ||
+          //   exerciseDurationMinutes ||
+          //   BeepSeconds ||
+          //   timevalue
           // }
           onPress={() => {
             // setTimeValue([...timevalue],hours=hours);
-
+            // AsyncStorage.removeItem("jwt");
+            removeItem();
             storeData();
             // fun();
             setIsIconDisabled(true);

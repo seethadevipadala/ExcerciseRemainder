@@ -7,13 +7,20 @@ import { Audio } from "expo-av";
 import * as Progress from "react-native-progress";
 const TimerScreen = ({ navigation, route }) => {
   const [sound, setSound] = React.useState();
-  const { exerciseDurationHours, exerciseDurationMinutes, BeepInterval } =
-    route.params;
+  const {
+    exerciseDurationHours,
+    exerciseDurationMinutes,
+    beepIntervalMinutes,
+    beepIntervalSeconds,
+  } = route.params;
+  // console.log(beepIntervalMinutes, beepIntervalSeconds, "timer");
+  const BeepInterval = beepIntervalMinutes * 60 + beepIntervalSeconds;
+
   // const Duration = ExerciseDuration;
   // var beepIntervalValue = BeepInterval.split(" ");
   // var BeepInterval = parseInt(beepIntervalValue[0], 10) * 60000;
   const [resetBeep, setResetBeep] = useState(BeepInterval);
-  console.log(exerciseDurationHours, exerciseDurationMinutes, "timer");
+  // console.log(BeepInterval, "timer");
   var timer;
   var hour = "0";
   var minute = "";
@@ -30,14 +37,12 @@ const TimerScreen = ({ navigation, route }) => {
   const [isStart, setIsStart] = useState(true);
   const [isFinish, setIsFinish] = useState(false);
   const totalSeconds = hours * 60 * 60 + minutes * 60;
-  console.log(totalSeconds);
-  const [percent, setPercent] = useState(1);
+  // console.log(totalSeconds);
+  const [percent, setPercent] = useState(0.3);
   useEffect(() => {
     if (isStart) {
       timer = setInterval(() => {
-        // let per = (seconds / totalSeconds) * 10;
-        // setPercent(per);
-        // console.log(per);
+        
         setSeconds(seconds - 1);
         if (seconds === 0) {
           setSeconds(59);
@@ -87,8 +92,8 @@ const TimerScreen = ({ navigation, route }) => {
     setIsFinish(!isFinish);
   };
   const onReset = () => {
-    setHours(hour);
-    setMinutes(ExerciseDuration);
+    setHours(exerciseDurationHours);
+    setMinutes(exerciseDurationMinutes);
     setSeconds(0);
     setIsStart(false);
     setResetBeep(BeepInterval);
@@ -99,33 +104,34 @@ const TimerScreen = ({ navigation, route }) => {
   };
   return (
     <View style={{ backgroundColor: "rgb(242,242,242)" }}>
-      <View style={{ paddingLeft: 90, paddingTop: 40 }}>
-        {/* <Progress.Bar progress={percent} size={0.3} width={200} /> */}
-      </View>
       <ScrollView style={[styles.view, styles.elevation]}>
         <Text style={styles.text}>
           {hours < 10 ? "0" + hours : hours}:
           {minutes < 10 ? "0" + minutes : minutes}:
           {seconds < 10 ? "0" + seconds : seconds}
         </Text>
-
-        <View style={styles.button}>
-          {isStart ? (
-            <Icon
-              color={"#707070"}
-              name="pause"
-              size={40}
-              backgroundColor="#bac9d6"
-              onPress={pause}
-            />
-          ) : (
-            <Icon
-              name="play"
-              size={40}
-              backgroundColor="#3b5998"
-              onPress={pause}
-            />
-          )}
+        <View style={{ paddingLeft: 20, paddingTop: 20 }}>
+          {/* <Progress.Bar size={0.3} width={200} height={1} /> */}
+        </View>
+        <View style={[styles.card, styles.elevation]}>
+          <View style={styles.button}>
+            {isStart ? (
+              <Icon
+                color={"#707070"}
+                name="pause"
+                size={40}
+                backgroundColor="#bac9d6"
+                onPress={pause}
+              />
+            ) : (
+              <Icon
+                name="play"
+                size={40}
+                backgroundColor="#3b5998"
+                onPress={pause}
+              />
+            )}
+          </View>
         </View>
       </ScrollView>
       <View style={styles.buttonGroup}>
@@ -149,24 +155,34 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     // paddingLeft: 85,
-    paddingTop: 80,
+    paddingTop: 250,
     marginLeft: 40,
     marginRight: 40,
     shadowOpacity: 1,
   },
   button: {
-    height: 40,
-    width: 60,
-    marginLeft: 110,
-    marginTop: 60,
+    height: 70,
+    width: 70,
+    marginLeft: 17,
+    marginTop: 17,
+  },
+  card: {
+    height: 70,
+    width: 70,
+    marginLeft: 85,
+    // marginTop: 70,
+    marginBottom: 20,
+    borderRadius: 130,
+    borderColor: "#DCDCDC",
+    backgroundColor: "rgb(242,242,242)",
   },
   text: {
     color: "Black",
-    fontFamily: "MetropolisBlackItalic",
+    fontFamily: "MetropolisBlackBoldItalic",
 
-    marginLeft: 60,
-    marginTop: 30,
-    fontSize: 25,
+    marginLeft: 44,
+    marginTop: 90,
+    fontSize: 35,
     // textShadowColor:"blue"
   },
   view: {
